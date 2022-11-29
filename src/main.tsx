@@ -10,12 +10,19 @@ import { createBrowserRouter, RouterProvider } from 'react-router-dom'
 import { InitAtom } from './atoms/InitAtom'
 import { Root } from './pages/Root'
 import { ErrorPage } from './pages/ErrorPage'
+import { FrontPage } from './pages/FrontPage'
 
 const router = createBrowserRouter([
   {
     path: '/',
     element: <Root />,
     errorElement: <ErrorPage />,
+    children: [
+      {
+        path: '/',
+        element: <FrontPage />,
+      },
+    ],
   },
 ])
 
