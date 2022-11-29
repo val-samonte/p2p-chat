@@ -11,6 +11,7 @@ import { InitAtom } from './atoms/InitAtom'
 import { Root } from './pages/Root'
 import { ErrorPage } from './pages/ErrorPage'
 import { FrontPage } from './pages/FrontPage'
+import { BuyPage } from './pages/BuyPage'
 
 const router = createBrowserRouter([
   {
@@ -21,6 +22,10 @@ const router = createBrowserRouter([
       {
         path: '/',
         element: <FrontPage />,
+      },
+      {
+        path: '/buy',
+        element: <BuyPage />,
       },
     ],
   },

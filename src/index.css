@@ -6,6 +6,7 @@ body {
   height: 100vh;
   background-color: theme(colors.zinc.900);
   color: theme(colors.zinc.50);
+  fill: currentColor;
 
   --square-size: min(100vw, 100vh);
 }

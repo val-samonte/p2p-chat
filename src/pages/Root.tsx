@@ -5,7 +5,7 @@ import { useWalletModal } from '@solana/wallet-adapter-react-ui'
 import classNames from 'classnames'
 import { useAtomValue } from 'jotai'
 import { Suspense } from 'react'
-import { NavLink, Outlet } from 'react-router-dom'
+import { Link, NavLink, Outlet } from 'react-router-dom'
 
 export function Root() {
   const { setVisible } = useWalletModal()
@@ -15,13 +15,20 @@ export function Root() {
     <div className='fixed inset-0 overflow-x-hidden overflow-y-auto'>
       <div
         className={classNames(
-          'lg:landscape:w-square w-full h-full',
+          'lg:landscape:w-square w-full min-h-full',
           'mx-auto flex flex-col',
         )}
       >
-        <nav className='flex-none'>
+        <nav className='flex-none sticky top-0 bg-zinc-900 z-10 pb-3'>
           <ul className='flex items-end py-2 px-5 gap-5'>
-            <li className='mr-auto text-4xl font-bold'>pygmy</li>
+            <li className='mr-auto'>
+              <Link className='flex items-end' to='/'>
+                <h1 className='text-4xl font-bold'>pygmy</h1>
+                <span className='opacity-50 hidden lg:inline border-l border-l-zinc-100/50 ml-3 pl-3'>
+                  Buy and sell Solana tokens in PH
+                </span>
+              </Link>
+            </li>
             <li>
               <NavLink
                 to='/buy'
@@ -62,7 +69,7 @@ export function Root() {
         </main>
         <footer className='flex-none flex items-center justify-center p-5'>
           <div className='flex items-center'>
-            <img className='h-6 mr-3' src='./discord.svg' />
+            <img className='h-6 mr-3 text-zinc-50' src='./discord.svg' />
             Join Our Community
           </div>
         </footer>
