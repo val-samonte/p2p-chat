@@ -1,10 +1,12 @@
+import { OnlineIndicator } from './LoadingIndicator'
+
 export function SellerCard() {
   return (
     <li className='gap-3 cursor-pointer transition-all p-5 hover:p-7 hover:-m-2 bg-slate-100 text-zinc-900 rounded-2xl grid grid-cols-2 md:grid-cols-5 items-center'>
       <div className='flex flex-col'>
         <div className='flex items-center'>
           <span className='underline'>Dt29...wzHC</span>
-          <span className='bg-green-500 ml-2 h-3 w-3 rounded-full inline-block'></span>
+          <OnlineIndicator state={'online'} />
         </div>
         <div className='flex items-center'>
           <img src='/discord_black.svg' className='h-4 w-4 mr-2' />

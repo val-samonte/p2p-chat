@@ -1,5 +1,9 @@
+import { isPeerOnline } from '@/atoms/p2pAtom'
 import { userWalletAtom } from '@/atoms/userWalletAtom'
-import { LoadingIndicator } from '@/components/LoadingIndicator'
+import {
+  LoadingIndicator,
+  OnlineIndicator,
+} from '@/components/LoadingIndicator'
 import { trimAddress } from '@/utils/trimAddress'
 import { useWalletModal } from '@solana/wallet-adapter-react-ui'
 import classNames from 'classnames'
@@ -10,6 +14,7 @@ import { Link, NavLink, Outlet } from 'react-router-dom'
 export function Root() {
   const { setVisible } = useWalletModal()
   const { publicKey, disconnect } = useAtomValue(userWalletAtom)
+  const peerState = useAtomValue(isPeerOnline)
 
   return (
     <div className='fixed inset-0 overflow-x-hidden overflow-y-auto'>
@@ -55,8 +60,9 @@ export function Root() {
                   Connect <span className='hidden sm:inline'>Wallet</span>
                 </button>
               ) : (
-                <button onClick={disconnect}>
-                  {trimAddress(publicKey.toBase58())}
+                <button onClick={disconnect} className='flex items-center'>
+                  {trimAddress(publicKey.toBase58())}{' '}
+                  <OnlineIndicator state={peerState} />
                 </button>
               )}
             </li>
