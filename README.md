@@ -2,7 +2,7 @@
 
 ### Objective
 
-This projects aims to become a hub to facilitate the trading of tokens and fiat in an open and decentralized manner.
+This project aims to become a hub to facilitate the trading of tokens and fiat in an open and decentralized manner.
 
 ### Case Study
 
@@ -18,7 +18,7 @@ Centralized Exchanges (CEX) can mitigate these problems by implementing Know You
 
 ### Solution
 
-The goal is gradually come up with a solution such that it will become at par with top Centralized P2P Trade Facilitators. To achieve this, it is important to build a community of believers, builders and enthusiasts who will lay the foundation of this vision.
+The goal is to gradually come up with a solution such that it will become at par with top Centralized P2P Trade Facilitators. To achieve this, it is important to build a community of believers, builders and enthusiasts who will lay the foundation of this vision.
 
 The project will be governed by the community (as Decentralized Organization / DAO). The DAO will act as a Trade Facilitator and will handle all issues that may arise from the protocol by conducting public meetings, proposing solutions, and voting for protocol improvements.
 
