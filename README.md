@@ -2,25 +2,24 @@
 
 ### Objective
 
-Create a dapp in Solana which will allow secured peer-to-peer (p2p) trading of tokens and fiat currencies by acting as a Trade Facilitator, similar to how Binance does their p2p, but decentralized and open sourced. 
+This projects aims to become a hub to facilitate the trading of tokens and fiat in an open and decentralized manner.
 
 ### Case Study
 
-It is hard to introduce cryptocurrency to other people because of the friction from trading fiat to crypto and vice versa. Centralized Exchange (CEX) such as Binance has been effective as a bridge for the people to get into cryptocurrency, however the centralized nature of it violates the ethos of decentralization.
+It is hard to introduce cryptocurrency to other people because of the friction of trading fiat to cryptocurrencies. Centralized Exchange (CEX) such as Binance has been effective for bridging the people to get into cryptocurrencies, however the centralized and closed nature of it breaks the ethos of decentralization.
 
-GCash is still the de facto standard for digital money exchange in the Philippines. As the majority of small businesses already grasp the idea and the benefit of this tool due to the recent pandemic, it should be easier to introduce Solana to them as well, but only if we have a better tool to trade fiat and cryptocurrency.
+GCash is still the de facto standard for digital money exchange in the Philippines. As the majority of small businesses already grasp the idea and the benefit of this tool due to the recent covid-19 pandemic, it should be easy to introduce them to the usefulness of cryptocurrency.
 
 ### Challenge
 
-The major reason this kind of dapp does not exist yet is because of trust: nobody wants to trade real money in exchange of cryptocurrency to a complete stranger. As per Binance, this is easily mitigated via Know Your Customer (KYC). Takers (the buyers) can easily appeal if the maker (the seller) has malicious intent, and vice versa.
+It is hard to implement this tool due to trust and legal issues. Nobody wants to trade real money in exchange of cryptocurrency to a complete stranger. How do we guarantee that we're not transacting to someone who is involved in criminal activities? How do we prevent money laundering?
+
+Centralized Exchanges (CEX) can mitigate these problems by implementing Know Your Customer (KYC) to their platform. 
 
 ### Solution
 
-Introduce a tool which enables p2p exchange of fiat and cryptocurrency with escrow feature.
+The goal is gradually come up with a solution such that it will become at par with top Centralized P2P Trade Facilitators. To achieve this, it is important to build a community of believers, builders and enthusiasts who will lay the foundation of this vision.
 
-The dapp is governed by an active community (as Decentralized Organization / DAO). The DAO will act as a Trade Facilitator and will handle all issues that may arise from the protocol by conducting public hearings, proposing solutions, and voting for protocol improvements.
+The project will be governed by the community (as Decentralized Organization / DAO). The DAO will act as a Trade Facilitator and will handle all issues that may arise from the protocol by conducting public meetings, proposing solutions, and voting for protocol improvements.
 
-The dapp will gain revenue by adding a very small fee to every sell orders made by the sellers, and this revenue is distributed fairly to the participants of the dapp.
-
-To promote transparency, the whole protocol will be open sourced, so that the community can spot bugs and can contribute easily.
-
+The dapp will apply small fees to some of its features. These fees will be stored to the DAO's treasury. The treasury will be used to compensate the participants within the protocol.
