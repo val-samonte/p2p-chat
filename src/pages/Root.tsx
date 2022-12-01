@@ -1,4 +1,4 @@
-import { isPeerOnline } from '@/atoms/p2pAtom'
+import { myOnlineStateAtom } from '@/atoms/p2pAtom'
 import { userWalletAtom } from '@/atoms/userWalletAtom'
 import {
   LoadingIndicator,
@@ -14,7 +14,7 @@ import { Link, NavLink, Outlet } from 'react-router-dom'
 export function Root() {
   const { setVisible } = useWalletModal()
   const { publicKey, disconnect } = useAtomValue(userWalletAtom)
-  const peerState = useAtomValue(isPeerOnline)
+  const peerState = useAtomValue(myOnlineStateAtom)
 
   return (
     <div className='fixed inset-0 overflow-x-hidden overflow-y-auto'>
