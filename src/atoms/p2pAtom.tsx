@@ -6,10 +6,30 @@ import { DataConnection, Peer } from 'peerjs'
 import nacl from 'tweetnacl'
 import { getRandom } from '@/utils/encryption'
 import { userWalletAtom } from './userWalletAtom'
+import { chatAtom, peerConnections } from './chatAtom'
+
+type ConnectionMessage =
+  | { type: 'challenge'; message: string }
+  | { type: 'verification'; message: string }
+
+type P2pAtomAction =
+  | { type: 'init'; key: string }
+  | { type: 'destroy' }
+  | { type: 'connect'; key: string }
+  | { type: 'add_connection'; conn: DataConnection }
+
+interface ValidateConnectionParams {
+  connection: DataConnection
+  myPubkey: string
+  targetDevicePubkey: string
+  onVerify: (result: boolean) => void
+}
 
 const myPeerAtom = atom<Peer | null>(null)
 
-const myDevicePubkeyAtom = atomFamily((pubkey: string) =>
+export const isNetworkOnlineAtom = atom(window.navigator.onLine)
+
+export const myDevicePubkeyAtom = atomFamily((pubkey: string) =>
   atom<string>(() => {
     const storeId = `device_key_${pubkey}`
 
@@ -29,43 +49,29 @@ const myDevicePubkeyAtom = atomFamily((pubkey: string) =>
   }),
 )
 
-const peerConnections = atomFamily((pubkey: string) =>
-  atom<DataConnection | null>(null),
-)
-
-export const isNetworkOnlineAtom = atom(window.navigator.onLine)
-
 export const myOnlineStateAtom = atom((get) => {
   const myPeer = get(myPeerAtom)
   const isOnline = get(isNetworkOnlineAtom)
   return !isOnline ? 'offline' : myPeer ? 'online' : 'loading'
 })
 
-type ConnectionMessage =
-  | { type: 'verify'; message: string } // ask peer to verify his / her identity
-  | { type: 'verification'; message: string } // answer with verification
+const validateConnection = ({
+  connection,
+  myPubkey,
+  targetDevicePubkey,
+  onVerify,
+}: ValidateConnectionParams) => {
+  const nonce = getRandom()
 
-interface ConnectionOnData {
-  nonce: string
-  myPubkey: string
-  targetDevicePubkey: string
-  verifyCallback: (signature: string) => void
-  verificationCallback: (verifyResult: boolean) => void
-}
+  connection.on('close', () => {
+    peerConnections.remove(targetDevicePubkey)
+  })
 
-const connectionOnData =
-  ({
-    nonce,
-    myPubkey,
-    targetDevicePubkey,
-    verifyCallback,
-    verificationCallback,
-  }: ConnectionOnData) =>
-  (data: unknown) => {
+  connection.on('data', (data) => {
     try {
       const payload = data as ConnectionMessage
       switch (payload.type) {
-        case 'verify': {
+        case 'challenge': {
           const deviceKey = window.localStorage.getItem(
             `device_key_${myPubkey}`,
           )
@@ -77,7 +83,7 @@ const connectionOnData =
             nacl.sign.detached(message, keypair.secretKey),
           )
 
-          verifyCallback(signature)
+          connection.send({ type: 'verification', message: signature })
           break
         }
         case 'verification': {
@@ -87,21 +93,20 @@ const connectionOnData =
           const signature = bs58.decode(payload.message)
           const pubkey = new PublicKey(targetDevicePubkey).toBytes()
 
-          verificationCallback(
-            nacl.sign.detached.verify(message, signature, pubkey),
-          )
+          onVerify(nacl.sign.detached.verify(message, signature, pubkey))
           break
         }
       }
     } catch (e) {
-      console.error(e)
+      connection.close()
+      console.error('P2P Validate Connection:', e)
     }
-  }
+  })
 
-type P2pAtomAction =
-  | { type: 'init'; key: string }
-  | { type: 'destroy' }
-  | { type: 'connect'; key: string }
+  connection.on('open', () => {
+    connection.send({ type: 'challenge', message: nonce })
+  })
+}
 
 export const p2pAtom = atom(null, async (get, set, action: P2pAtomAction) => {
   console.log('P2P:', action.type)
@@ -141,46 +146,31 @@ export const p2pAtom = atom(null, async (get, set, action: P2pAtomAction) => {
       if (!peer) return
 
       peer.off('error')
+      peer.off('open')
+
       peer.on('error', (err) => {
-        console.log(JSON.stringify(err))
+        console.error('P2P: error', JSON.stringify(err))
         set(p2pAtom, { type: 'destroy' })
       })
 
-      peer.on('connection', (conn) => {
-        console.log('P2P: receiving connection', conn)
-        const nonce = getRandom()
+      peer.on('connection', (connection) => {
+        console.log('P2P: receiving connection', connection.peer)
 
-        conn.on(
-          'data',
-          connectionOnData({
-            nonce,
-            myPubkey: action.key,
-            targetDevicePubkey: conn.peer.split('_')[1],
-            verifyCallback: (signature) => {
-              conn.send({ type: 'verification', message: signature })
-            },
-            verificationCallback: (result) => {
-              // todo
-            },
-          }),
-        )
-
-        // challenge connector
-        conn.send({ type: 'verify', message: nonce })
+        validateConnection({
+          connection,
+          myPubkey: action.key,
+          targetDevicePubkey: connection.peer.split('_')[1],
+          onVerify: (result) => {
+            if (result) {
+              set(chatAtom, { type: 'add_connection', connection })
+            } else {
+              connection.close()
+            }
+          },
+        })
       })
 
       set(myPeerAtom, peer)
-      break
-    }
-
-    case 'destroy': {
-      const peer = get(myPeerAtom)
-      if (peer) {
-        if (!peer.destroyed) {
-          peer.destroy()
-        }
-        set(myPeerAtom, null)
-      }
       break
     }
 
@@ -206,40 +196,25 @@ export const p2pAtom = atom(null, async (get, set, action: P2pAtomAction) => {
           const nonce = getRandom()
 
           console.log('P2P: connecting to', hostId, nonce)
-          const newConn = peer.connect(hostId)
+          const connection = peer.connect(hostId)
 
-          newConn.on('error', () => {
-            const conn = get(peerConnections(action.key))
-            if (conn) {
-              conn.close()
-              set(peerConnections(action.key), null)
-              peerConnections.remove(action.key)
-            }
+          connection.on('error', () => {
             clearTimeout(expireId)
             resolve(null)
           })
 
-          newConn.on(
-            'data',
-            connectionOnData({
-              nonce,
-              myPubkey: myPubkey.toBase58(),
-              targetDevicePubkey: action.key,
-              verifyCallback: (signature) => {
-                // todo
-              },
-              verificationCallback: (result) => {
-                if (result) {
-                  clearTimeout(expireId)
-                  resolve(newConn)
-                }
-              },
-            }),
-          )
-
-          newConn.on('open', () => {
-            // challenge peer connection
-            newConn.send({ type: 'verify', message: nonce })
+          validateConnection({
+            connection,
+            myPubkey: myPubkey.toBase58(),
+            targetDevicePubkey: action.key,
+            onVerify: (result) => {
+              if (result) {
+                clearTimeout(expireId)
+                resolve(connection)
+              } else {
+                connection.close()
+              }
+            },
           })
         })
 
@@ -248,12 +223,19 @@ export const p2pAtom = atom(null, async (get, set, action: P2pAtomAction) => {
 
       if (!conn) return
 
-      // conn.off('open')
-      // conn.off('data')
-      console.log('P2P: connected to', conn.peer)
+      set(chatAtom, { type: 'add_connection', connection: conn })
 
-      // todo: add to connection list (peerConnections)
+      break
+    }
 
+    case 'destroy': {
+      const peer = get(myPeerAtom)
+      if (peer) {
+        if (!peer.destroyed) {
+          peer.destroy()
+        }
+        set(myPeerAtom, null)
+      }
       break
     }
   }
