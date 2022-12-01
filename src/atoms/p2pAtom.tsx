@@ -6,7 +6,7 @@ import { DataConnection, Peer } from 'peerjs'
 import nacl from 'tweetnacl'
 import { getRandom } from '@/utils/encryption'
 import { userWalletAtom } from './userWalletAtom'
-import { chatAtom, peerConnections } from './chatAtom'
+import { connectionAtom } from './chatAtom'
 
 type ConnectionMessage =
   | { type: 'challenge'; message: string }
@@ -62,10 +62,6 @@ const validateConnection = ({
   onVerify,
 }: ValidateConnectionParams) => {
   const nonce = getRandom()
-
-  connection.on('close', () => {
-    peerConnections.remove(targetDevicePubkey)
-  })
 
   connection.on('data', (data) => {
     try {
@@ -162,7 +158,7 @@ export const p2pAtom = atom(null, async (get, set, action: P2pAtomAction) => {
           targetDevicePubkey: connection.peer.split('_')[1],
           onVerify: (result) => {
             if (result) {
-              set(chatAtom, { type: 'add_connection', connection })
+              set(connectionAtom, { type: 'add', connection })
             } else {
               connection.close()
             }
@@ -223,7 +219,7 @@ export const p2pAtom = atom(null, async (get, set, action: P2pAtomAction) => {
 
       if (!conn) return
 
-      set(chatAtom, { type: 'add_connection', connection: conn })
+      set(connectionAtom, { type: 'add', connection: conn })
 
       break
     }
