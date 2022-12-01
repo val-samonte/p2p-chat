@@ -24,7 +24,7 @@ export function BuyPage() {
         <li>in PHP</li>
       </ul>
       <ul className='flex flex-col gap-5'>
-        <SellerCard />
+        <SellerCard sellerPubkey='D7YjwVx4HVq6zZFu6RCL3kkCBkQ1eKz8aFmn5G7e8z8e' />
       </ul>
     </div>
   )
