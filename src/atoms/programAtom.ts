@@ -40,7 +40,7 @@ export const programAtom = atom((get) => {
 
   return new Program<P2pTradeFacilitatorProgram>(
     idl as unknown as P2pTradeFacilitatorProgram,
-    import.meta.env.VITE_W3T_PROGRAM_ID!,
+    import.meta.env.VITE_PROGRAM_ID ?? idl.metadata.address,
     provider,
   )
 })
