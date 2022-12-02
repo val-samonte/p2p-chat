@@ -75,7 +75,7 @@ export function Root() {
         </main>
         <footer className='flex-none flex items-center justify-center p-5'>
           <div className='flex items-center'>
-            <img className='h-6 mr-3 text-zinc-50' src='./discord.svg' />
+            <img className='h-6 mr-3 text-zinc-50' src='/discord.svg' />
             Join Our Community
           </div>
         </footer>

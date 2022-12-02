@@ -12,6 +12,7 @@ import { Root } from './pages/Root'
 import { ErrorPage } from './pages/ErrorPage'
 import { FrontPage } from './pages/FrontPage'
 import { BuyPage } from './pages/BuyPage'
+import { NewSellAdPage } from './pages/NewSellAdPage'
 
 const router = createBrowserRouter([
   {
@@ -26,6 +27,10 @@ const router = createBrowserRouter([
       {
         path: '/buy',
         element: <BuyPage />,
+      },
+      {
+        path: '/sell/new',
+        element: <NewSellAdPage />,
       },
     ],
   },
