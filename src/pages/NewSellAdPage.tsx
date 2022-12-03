@@ -69,11 +69,14 @@ export function NewSellAdPage() {
 
   const [formState, dispatch] = useSellAdForm()
   const [balance, setBalance] = useState(0)
+  const [loadingBalance, setLoadingBalance] = useState(true)
 
   useEffect(() => {
     if (publicKey) {
+      setLoadingBalance(true)
       program.provider.connection.getBalance(publicKey).then((amount) => {
         setBalance(amount / LAMPORTS_PER_SOL)
+        setLoadingBalance(false)
       })
     } else {
       setBalance(0)
@@ -82,6 +85,7 @@ export function NewSellAdPage() {
 
   const onSubmit = (e: FormEvent) => {
     e.preventDefault()
+    window.scrollTo(0, 0)
   }
 
   if (!publicKey) {
@@ -93,7 +97,7 @@ export function NewSellAdPage() {
           className={classNames(
             'transition-all rounded-full',
             'px-5 py-1 hover:px-6 hover:py-2 hover:-m-1',
-            'bg-slate-100 text-zinc-900 hover:bg-slate-50',
+            'bg-zinc-100 text-zinc-900 hover:bg-zinc-50',
           )}
         >
           Connect Wallet
@@ -105,11 +109,18 @@ export function NewSellAdPage() {
   return (
     <div className='px-5 flex flex-col gap-5 mb-5'>
       <h1 className='py-5 text-xl text-center'>Sell Tokens</h1>
-      <div className='bg-slate-100 text-zinc-900 rounded-2xl max-w-xl w-full mx-auto flex flex-col p-5'>
+      <div className='bg-zinc-100 text-zinc-900 rounded-2xl max-w-xl w-full mx-auto flex flex-col p-5'>
         <p className='flex items-center justify-center italic'>
           You&nbsp;<span className='hidden sm:inline'>currently</span>&nbsp;have
-          <img src='/solanaLogoMark.svg' className='h-4 w-4 mx-2' />
-          <span className='font-bold'>{balance}</span>&nbsp;tokens
+          {loadingBalance ? (
+            <div className='animate-pulse rounded-xl bg-zinc-200 w-20 h-6 mx-2' />
+          ) : (
+            <>
+              <img src='/solanaLogoMark.svg' className='h-4 w-4 mx-2' />
+              <span className='font-bold'>{balance}</span>&nbsp;
+            </>
+          )}
+          tokens
         </p>
         <hr className='border-zinc-200 border-dashed my-3' />
         <form className='w-full flex flex-col gap-5' onSubmit={onSubmit}>
@@ -117,7 +128,20 @@ export function NewSellAdPage() {
             <label className='flex flex-col'>
               <div className='text-sm mb-1 flex justify-between'>
                 <span>Amount</span>
-                <div className='cursor-pointer underline'>MAX</div>
+                <button
+                  type='button'
+                  className='cursor-pointer underline'
+                  onClick={() =>
+                    !loadingBalance &&
+                    dispatch({
+                      type: 'input',
+                      name: 'available',
+                      value: balance - 0.01 + '',
+                    })
+                  }
+                >
+                  MAX
+                </button>
               </div>
               <div className='flex'>
                 <div className='flex items-center justify-center h-8 aspect-square bg-zinc-900 rounded-l-xl text-zinc-100'>
@@ -250,7 +274,7 @@ export function NewSellAdPage() {
             className={classNames(
               'transition-all rounded-full',
               'px-2 py-1 hover:px-3 hover:py-2 hover:-m-1',
-              'text-slate-100 bg-zinc-900 hover:bg-zinc-800',
+              'text-zinc-100 bg-zinc-900 hover:bg-zinc-800',
             )}
           >
             Post Sell Ad
